@@ -40,6 +40,11 @@ namespace edm {
   class ModuleCallingContext;
   class ProductHolderIndexHelper;
   class EDConsumerBase;
+  class PreallocationConfiguration;
+  
+  namespace maker {
+    template<typename T> class ModuleHolderT;
+  }
   
   namespace stream {
     template<typename T>
@@ -48,6 +53,7 @@ namespace edm {
       
     public:
       template <typename U> friend class edm::WorkerT;
+      template <typename U> friend class edm::maker::ModuleHolderT;
 
       ProducingModuleAdaptorBase();
       virtual ~ProducingModuleAdaptorBase();
@@ -57,7 +63,7 @@ namespace edm {
       // ---------- static member functions --------------------
       
       // ---------- member functions ---------------------------
-      const ModuleDescription moduleDescription() { return moduleDescription_;}
+      const ModuleDescription& moduleDescription() { return moduleDescription_;}
       
       void
       registerProductsAndCallbacks(ProducingModuleAdaptorBase const*, ProductRegistry* reg);
@@ -70,7 +76,9 @@ namespace edm {
 
     protected:
       template<typename F> void createStreamModules(F iFunc) {
-        m_streamModules[0] = iFunc();
+        for(auto& m: m_streamModules) {
+          m = iFunc();
+        }
       }
       
       void commit(Run& iRun) {
@@ -92,9 +100,8 @@ namespace edm {
       
       const ProducingModuleAdaptorBase& operator=(const ProducingModuleAdaptorBase&) = delete; // stop default
 
-      //Inheriting classes must implement this function for the Worker class
-      //bool doEvent(EventPrincipal& ep, EventSetup const& c,
-      //                     CurrentProcessingContext const* cpcp) ;
+      void doPreallocate(PreallocationConfiguration const&);
+      virtual void setupStreamModules() = 0;
       void doBeginJob();
       virtual void doEndJob() = 0;
       
@@ -103,43 +110,35 @@ namespace edm {
       void doStreamBeginRun(StreamID id,
                             RunPrincipal& ep,
                             EventSetup const& c,
-                            CurrentProcessingContext const* cpcp,
                             ModuleCallingContext const*);
       virtual void setupRun(T*, RunIndex) = 0;
       void doStreamEndRun(StreamID id,
                           RunPrincipal& ep,
                           EventSetup const& c,
-                          CurrentProcessingContext const* cpcp,
                           ModuleCallingContext const*);
       virtual void streamEndRunSummary(T*,edm::Run const&, edm::EventSetup const&) = 0;
 
       void doStreamBeginLuminosityBlock(StreamID id,
                                         LuminosityBlockPrincipal& ep,
                                         EventSetup const& c,
-                                        CurrentProcessingContext const* cpcp,
                                         ModuleCallingContext const*);
       virtual void setupLuminosityBlock(T*, LuminosityBlockIndex) = 0;
       void doStreamEndLuminosityBlock(StreamID id,
                                       LuminosityBlockPrincipal& ep,
                                       EventSetup const& c,
-                                      CurrentProcessingContext const* cpcp,
                                       ModuleCallingContext const*);
       virtual void streamEndLuminosityBlockSummary(T*,edm::LuminosityBlock const&, edm::EventSetup const&) = 0;
       
       
       virtual void doBeginRun(RunPrincipal& rp, EventSetup const& c,
-                              CurrentProcessingContext const* cpc,
                               ModuleCallingContext const*)=0;
       virtual void doEndRun(RunPrincipal& rp, EventSetup const& c,
-                            CurrentProcessingContext const* cpc,
                             ModuleCallingContext const*)=0;
       virtual void doBeginLuminosityBlock(LuminosityBlockPrincipal& lbp,
                                           EventSetup const& c,
-                                          CurrentProcessingContext const* cpc,
                                           ModuleCallingContext const*)=0;
       virtual void doEndLuminosityBlock(LuminosityBlockPrincipal& lbp,
                                         EventSetup const& c,
-                                        CurrentProcessingContext const* cpc,
                                         ModuleCallingContext const*)=0;
       
       //For now, the following are just dummy implemenations with no ability for users to override

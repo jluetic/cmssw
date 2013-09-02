@@ -153,7 +153,7 @@ namespace edm {
         if(bd.isAlias()) {
           hasAliases = true;
         } else {
-          boost::shared_ptr<ConstBranchDescription> cbd(new ConstBranchDescription(bd));
+          boost::shared_ptr<BranchDescription const> cbd(new BranchDescription const(bd));
           if(bd.produced()) {
             if(bd.moduleLabel() == source) {
               addSourceProduct(cbd);
@@ -174,7 +174,7 @@ namespace edm {
       for(auto const& prod : prodsList) {
         BranchDescription const& bd = prod.second;
         if(bd.isAlias() && bd.branchType() == branchType_) {
-          boost::shared_ptr<ConstBranchDescription> cbd(new ConstBranchDescription(bd));
+          boost::shared_ptr<BranchDescription const> cbd(new BranchDescription const(bd));
           addAliasedProduct(cbd);
         }
       }
@@ -253,7 +253,7 @@ namespace edm {
     for(auto const& prod : prodsList) {
       BranchDescription const& bd = prod.second;
       if(!bd.produced() && (bd.branchType() == branchType_)) {
-        boost::shared_ptr<ConstBranchDescription> cbd(new ConstBranchDescription(bd));
+        boost::shared_ptr<BranchDescription const> cbd(new BranchDescription const(bd));
         ProductHolderBase* phb = getExistingProduct(cbd->branchID());
         if(phb == nullptr || phb->branchDescription().branchName() != cbd->branchName()) {
             return false;
@@ -265,31 +265,31 @@ namespace edm {
   }
 
   void
-  Principal::addScheduledProduct(boost::shared_ptr<ConstBranchDescription> bd) {
+  Principal::addScheduledProduct(boost::shared_ptr<BranchDescription const> bd) {
     std::auto_ptr<ProductHolderBase> phb(new ScheduledProductHolder(bd));
     addProductOrThrow(phb);
   }
 
   void
-  Principal::addSourceProduct(boost::shared_ptr<ConstBranchDescription> bd) {
+  Principal::addSourceProduct(boost::shared_ptr<BranchDescription const> bd) {
     std::auto_ptr<ProductHolderBase> phb(new SourceProductHolder(bd));
     addProductOrThrow(phb);
   }
 
   void
-  Principal::addInputProduct(boost::shared_ptr<ConstBranchDescription> bd) {
+  Principal::addInputProduct(boost::shared_ptr<BranchDescription const> bd) {
     std::auto_ptr<ProductHolderBase> phb(new InputProductHolder(bd, this));
     addProductOrThrow(phb);
   }
 
   void
-  Principal::addUnscheduledProduct(boost::shared_ptr<ConstBranchDescription> bd) {
+  Principal::addUnscheduledProduct(boost::shared_ptr<BranchDescription const> bd) {
     std::auto_ptr<ProductHolderBase> phb(new UnscheduledProductHolder(bd, this));
     addProductOrThrow(phb);
   }
 
   void
-  Principal::addAliasedProduct(boost::shared_ptr<ConstBranchDescription> bd) {
+  Principal::addAliasedProduct(boost::shared_ptr<BranchDescription const> bd) {
     ProductHolderIndex index = preg_->indexFrom(bd->originalBranchID());
     assert(index != ProductHolderIndexInvalid);
 
@@ -300,9 +300,9 @@ namespace edm {
   // "Zero" the principal so it can be reused for another Event.
   void
   Principal::clearPrincipal() {
-    processHistoryPtr_ = 0;
+    processHistoryPtr_ = nullptr;
     processHistoryID_ = ProcessHistoryID();
-    reader_ = 0;
+    reader_ = nullptr;
     for(auto const& prod : *this) {
       prod->resetProductData();
     }
@@ -322,24 +322,26 @@ namespace edm {
   
   // Set the principal for the Event, Lumi, or Run.
   void
-  Principal::fillPrincipal(ProcessHistoryID const& hist, DelayedReader* reader) {
+  Principal::fillPrincipal(ProcessHistoryID const& hist,
+                           ProcessHistoryRegistry& processHistoryRegistry,
+                           DelayedReader* reader) {
     if(reader) {
       reader_ = reader;
     }
 
-    ProcessHistory const* inputProcessHistory = 0;
+    ProcessHistory const* inputProcessHistory = nullptr;
     if (historyAppender_ && productRegistry().anyProductProduced()) {
       CachedHistory const& cachedHistory = 
         historyAppender_->appendToProcessHistory(hist,
-                                                *processConfiguration_);
+                                                *processConfiguration_,
+                                                processHistoryRegistry);
       processHistoryPtr_ = cachedHistory.processHistory();
       processHistoryID_ = cachedHistory.processHistoryID();
       inputProcessHistory = cachedHistory.inputProcessHistory();
     }
     else {
       if (hist.isValid()) {
-        ProcessHistoryRegistry* registry = ProcessHistoryRegistry::instance();
-        inputProcessHistory = registry->getMapped(hist);
+        inputProcessHistory = processHistoryRegistry.getMapped(hist);
         if (inputProcessHistory == 0) {
           throw Exception(errors::LogicError)
             << "Principal::fillPrincipal\n"
@@ -388,7 +390,7 @@ namespace edm {
 
   void
   Principal::addProduct_(std::auto_ptr<ProductHolderBase> productHolder) {
-    ConstBranchDescription const& bd = productHolder->branchDescription();
+    BranchDescription const& bd = productHolder->branchDescription();
     assert (!bd.className().empty());
     assert (!bd.friendlyClassName().empty());
     assert (!bd.moduleLabel().empty());
@@ -404,7 +406,7 @@ namespace edm {
   Principal::addProductOrThrow(std::auto_ptr<ProductHolderBase> productHolder) {
     ProductHolderBase const* phb = getExistingProduct(*productHolder);
     if(phb != nullptr) {
-      ConstBranchDescription const& bd = productHolder->branchDescription();
+      BranchDescription const& bd = productHolder->branchDescription();
       throw Exception(errors::InsertFailure, "AlreadyPresent")
           << "addProductOrThrow: Problem found while adding product, "
           << "product already exists for ("
@@ -579,7 +581,7 @@ namespace edm {
          iter != iEnd; ++iter) {
       std::string const& process = iter->processName();
       for (auto productHolder : holders) {
-        ConstBranchDescription const& bd = productHolder->branchDescription();
+        BranchDescription const& bd = productHolder->branchDescription();
         if (process == bd.processName()) {
 
           // Ignore aliases to avoid matching the same product multiple times.
@@ -846,7 +848,7 @@ namespace edm {
           if(!productHolders_[index]) {
             // no product holder.  Must add one. The new entry must be an input product holder.
             assert(!bd.produced());
-            boost::shared_ptr<ConstBranchDescription> cbd(new ConstBranchDescription(bd));
+            boost::shared_ptr<BranchDescription const> cbd(new BranchDescription const(bd));
             addInputProduct(cbd);
           }
         }

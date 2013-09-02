@@ -14,8 +14,10 @@ configured in the user's main() function, and is set running.
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/IEventProcessor.h"
+#include "FWCore/Framework/interface/InputSource.h"
 #include "FWCore/Framework/src/PrincipalCache.h"
 #include "FWCore/Framework/src/SignallingProductRegistry.h"
+#include "FWCore/Framework/src/PreallocationConfiguration.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
@@ -40,7 +42,7 @@ namespace statemachine {
 
 namespace edm {
 
-  class ActionTable;
+  class ExceptionToActionTable;
   class BranchIDListHelper;
   class EDLooperBase;
   class HistoryAppender;
@@ -254,9 +256,9 @@ namespace edm {
     virtual void beginLumi(ProcessHistoryID const& phid, RunNumber_t run, LuminosityBlockNumber_t lumi);
     virtual void endLumi(ProcessHistoryID const& phid, RunNumber_t run, LuminosityBlockNumber_t lumi, bool cleaningUpAfterException);
 
-    virtual statemachine::Run readAndCacheRun();
+    virtual statemachine::Run readRun();
     virtual statemachine::Run readAndMergeRun();
-    virtual int readAndCacheLumi();
+    virtual int readLuminosityBlock();
     virtual int readAndMergeLumi();
     virtual void writeRun(statemachine::Run const& run);
     virtual void deleteRunFromCache(statemachine::Run const& run);
@@ -302,6 +304,15 @@ namespace edm {
     }
 
     void possiblyContinueAfterForkChildFailure();
+    
+    //read the next event using Stream iStreamIndex
+    void readEvent(unsigned int iStreamIndex);
+
+    //process the already read event using Stream iStreamIndex
+    void processEvent(unsigned int iStreamIndex);
+
+    //returns true if an asynchronous stop was requested
+    bool checkForAsyncStopRequest(StatusCode&);
     //------------------------------------------------------------------
     //
     // Data members below.
@@ -316,7 +327,7 @@ namespace edm {
     std::unique_ptr<InputSource>                  input_;
     std::unique_ptr<eventsetup::EventSetupsController> espController_;
     boost::shared_ptr<eventsetup::EventSetupProvider> esp_;
-    std::unique_ptr<ActionTable const>          act_table_;
+    std::unique_ptr<ExceptionToActionTable const>          act_table_;
     boost::shared_ptr<ProcessConfiguration const>       processConfiguration_;
     ProcessContext                                processContext_;
     std::auto_ptr<Schedule>                       schedule_;
@@ -356,6 +367,12 @@ namespace edm {
     unsigned int                                  numberOfSequentialEventsPerChild_;
     bool                                          setCpuAffinity_;
     bool                                          continueAfterChildFailure_;
+    
+    PreallocationConfiguration                    preallocations_;
+    
+    bool                                          asyncStopRequestedWhileProcessingEvents_;
+    InputSource::ItemType                         nextItemTypeFromProcessingEvents_;
+    StatusCode                                    asyncStopStatusCodeFromProcessingEvents_;
     
     typedef std::set<std::pair<std::string, std::string> > ExcludedData;
     typedef std::map<std::string, ExcludedData> ExcludedDataMap;

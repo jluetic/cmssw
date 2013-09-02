@@ -13,14 +13,19 @@
 namespace edm {
 
   class ModuleCallingContext;
+  class PreallocationConfiguration;
+
+  namespace maker {
+    template<typename T> class ModuleHolderT;
+  }
 
   class EDAnalyzer : public EDConsumerBase {
   public:
+    template <typename T> friend class maker::ModuleHolderT;
     template <typename T> friend class WorkerT;
     typedef EDAnalyzer ModuleType;
-    typedef WorkerT<EDAnalyzer> WorkerType;
 
-    EDAnalyzer() : moduleDescription_(), current_context_(nullptr) {}
+    EDAnalyzer() : moduleDescription_() {}
     virtual ~EDAnalyzer();
     
     std::string workerType() const {return "WorkerT<EDAnalyzer>";}
@@ -32,30 +37,21 @@ namespace edm {
     // Warning: the returned moduleDescription will be invalid during construction
     ModuleDescription const& moduleDescription() const { return moduleDescription_; }
 
-  protected:
-    // The returned pointer will be null unless the this is currently
-    // executing its event loop function ('analyze').
-    CurrentProcessingContext const* currentContext() const;
-
     void callWhenNewProductsRegistered(std::function<void(BranchDescription const&)> const& func);
 
   private:
     bool doEvent(EventPrincipal const& ep, EventSetup const& c,
-                 CurrentProcessingContext const* cpc,
                  ModuleCallingContext const* mcc);
+    void doPreallocate(PreallocationConfiguration const&) {}
     void doBeginJob();
     void doEndJob();
     bool doBeginRun(RunPrincipal const& rp, EventSetup const& c,
-                    CurrentProcessingContext const* cpc,
                     ModuleCallingContext const* mcc);
     bool doEndRun(RunPrincipal const& rp, EventSetup const& c,
-                  CurrentProcessingContext const* cpc,
                   ModuleCallingContext const* mcc);
     bool doBeginLuminosityBlock(LuminosityBlockPrincipal const& lbp, EventSetup const& c,
-                                CurrentProcessingContext const* cpc,
                                 ModuleCallingContext const* mcc);
     bool doEndLuminosityBlock(LuminosityBlockPrincipal const& lbp, EventSetup const& c,
-                              CurrentProcessingContext const* cpc,
                               ModuleCallingContext const* mcc);
     void doRespondToOpenInputFile(FileBlock const& fb);
     void doRespondToCloseInputFile(FileBlock const& fb);
@@ -79,8 +75,6 @@ namespace edm {
       moduleDescription_ = md;
     }
     ModuleDescription moduleDescription_;
-
-    CurrentProcessingContext const* current_context_;
 
     std::function<void(BranchDescription const&)> callWhenNewProductsRegistered_;
   };

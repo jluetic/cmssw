@@ -15,7 +15,6 @@
 // user include files
 #include "FWCore/Framework/interface/stream/EDAnalyzerAdaptorBase.h"
 #include "FWCore/Framework/interface/stream/EDAnalyzerBase.h"
-#include "FWCore/Framework/src/CPCSentry.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "FWCore/Framework/interface/Run.h"
@@ -23,6 +22,7 @@
 #include "FWCore/Framework/interface/LuminosityBlockPrincipal.h"
 #include "FWCore/Framework/interface/RunPrincipal.h"
 
+#include "FWCore/Framework/src/PreallocationConfiguration.h"
 
 using namespace edm::stream;
 //
@@ -38,7 +38,6 @@ using namespace edm::stream;
 //
 EDAnalyzerAdaptorBase::EDAnalyzerAdaptorBase()
 {
-  m_streamModules.resize(1);
 }
 
 // EDAnalyzerAdaptorBase::EDAnalyzerAdaptorBase(const EDAnalyzerAdaptorBase& rhs)
@@ -68,6 +67,13 @@ EDAnalyzerAdaptorBase::~EDAnalyzerAdaptorBase()
 //
 // member functions
 //
+void
+EDAnalyzerAdaptorBase::doPreallocate(PreallocationConfiguration const& iPrealloc) {
+  m_streamModules.resize(iPrealloc.numberOfStreams(),
+                         static_cast<stream::EDAnalyzerBase*>(nullptr));
+  setupStreamModules();
+}
+
 void
 EDAnalyzerAdaptorBase::registerProductsAndCallbacks(EDAnalyzerAdaptorBase const*, ProductRegistry* reg) {
   for(auto mod : m_streamModules) {
@@ -102,11 +108,9 @@ EDAnalyzerAdaptorBase::consumer() const {
 
 bool
 EDAnalyzerAdaptorBase::doEvent(EventPrincipal& ep, EventSetup const& c,
-                               CurrentProcessingContext const* cpcp,
                                ModuleCallingContext const* mcc) {
   assert(ep.streamID()<m_streamModules.size());
   auto mod = m_streamModules[ep.streamID()];
-  detail::CPCSentry sentry(mod->current_context_, cpcp);
   Event e(ep, moduleDescription_, mcc);
   e.setConsumer(mod);
   mod->analyze(e, c);
@@ -130,11 +134,9 @@ void
 EDAnalyzerAdaptorBase::doStreamBeginRun(StreamID id,
                                         RunPrincipal& rp,
                                         EventSetup const& c,
-                                        CurrentProcessingContext const* cpcp,
                                         ModuleCallingContext const* mcc)
 {
   auto mod = m_streamModules[id];
-  detail::CPCSentry sentry(mod->current_context_, cpcp);
   setupRun(mod, rp.index());
   
   Run r(rp, moduleDescription_, mcc);
@@ -147,11 +149,9 @@ void
 EDAnalyzerAdaptorBase::doStreamEndRun(StreamID id,
                     RunPrincipal& rp,
                     EventSetup const& c,
-                    CurrentProcessingContext const* cpcp,
                     ModuleCallingContext const* mcc)
 {
   auto mod = m_streamModules[id];
-  detail::CPCSentry sentry(mod->current_context_, cpcp);
   Run r(rp, moduleDescription_, mcc);
   r.setConsumer(mod);
   mod->endRun(r, c);
@@ -162,10 +162,8 @@ void
 EDAnalyzerAdaptorBase::doStreamBeginLuminosityBlock(StreamID id,
                                                     LuminosityBlockPrincipal& lbp,
                                                     EventSetup const& c,
-                                                    CurrentProcessingContext const* cpcp,
                                                     ModuleCallingContext const* mcc) {
   auto mod = m_streamModules[id];
-  detail::CPCSentry sentry(mod->current_context_, cpcp);
   setupLuminosityBlock(mod,lbp.index());
   
   LuminosityBlock lb(lbp, moduleDescription_, mcc);
@@ -176,11 +174,9 @@ void
 EDAnalyzerAdaptorBase::doStreamEndLuminosityBlock(StreamID id,
                                 LuminosityBlockPrincipal& lbp,
                                 EventSetup const& c,
-                                CurrentProcessingContext const* cpcp,
                                 ModuleCallingContext const* mcc)
 {
   auto mod = m_streamModules[id];
-  detail::CPCSentry sentry(mod->current_context_, cpcp);
   LuminosityBlock lb(lbp, moduleDescription_, mcc);
   lb.setConsumer(mod);
   mod->endLuminosityBlock(lb, c);

@@ -40,7 +40,7 @@ Test program for edm::Event.
 #include "FWCore/Version/interface/GetReleaseVersion.h"
 #include "Utilities/Testing/interface/CppUnit_testdriver.icpp"
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "cppunit/extensions/HelperMacros.h"
 
 #include "Cintex/Cintex.h"
 
@@ -159,6 +159,7 @@ class testEvent: public CppUnit::TestFixture {
   typedef modCache_t::iterator iterator_t;
 
   modCache_t moduleDescriptions_;
+  ProcessHistoryRegistry processHistoryRegistry_;
   std::vector<boost::shared_ptr<ProcessConfiguration> > processConfigurations_;
   HistoryAppender historyAppender_;
 };
@@ -207,7 +208,7 @@ testEvent::registerProduct(std::string const& tag,
                            product_type
                         );
 
-  moduleDescriptions_[tag] = ModuleDescription(moduleParams.id(), moduleClassName, moduleLabel, processX.get());
+  moduleDescriptions_[tag] = ModuleDescription(moduleParams.id(), moduleClassName, moduleLabel, processX.get(),ModuleDescription::getUniqueID());
   availableProducts_->addProduct(branch);
 }
 
@@ -239,6 +240,7 @@ testEvent::testEvent() :
   currentEvent_(),
   currentModuleDescription_(),
   moduleDescriptions_(),
+  processHistoryRegistry_(),
   processConfigurations_() {
 
   ROOT::Cintex::Cintex::Enable();
@@ -275,7 +277,7 @@ testEvent::testEvent() :
 
   boost::shared_ptr<ProcessConfiguration> processX(new ProcessConfiguration(process));
   processConfigurations_.push_back(processX);
-  currentModuleDescription_.reset(new ModuleDescription(moduleParams.id(), moduleClassName, moduleLabel, processX.get()));
+    currentModuleDescription_.reset(new ModuleDescription(moduleParams.id(), moduleClassName, moduleLabel, processX.get(),ModuleDescription::getUniqueID()));
 
   std::string productInstanceName("int1");
 
@@ -342,7 +344,7 @@ void testEvent::setUp() {
   processHistory->push_back(processEarly);
   processHistory->push_back(processLate);
 
-  ProcessHistoryRegistry::instance()->insertMapped(ph);
+  processHistoryRegistry_.registerProcessHistory(ph);
 
   ProcessHistoryID processHistoryID = ph.id();
 
@@ -374,7 +376,7 @@ void testEvent::setUp() {
   EventAuxiliary eventAux(id, uuid, time, true);
   const_cast<ProcessHistoryID &>(eventAux.processHistoryID()) = processHistoryID;
   principal_.reset(new edm::EventPrincipal(preg, branchIDListHelper_, pc, &historyAppender_,edm::StreamID::invalidStreamID()));
-  principal_->fillEventPrincipal(eventAux);
+  principal_->fillEventPrincipal(eventAux, processHistoryRegistry_);
   principal_->setLuminosityBlockPrincipal(lbp);
   ModuleCallingContext mcc(currentModuleDescription_.get());
   currentEvent_.reset(new Event(*principal_, *currentModuleDescription_, &mcc));

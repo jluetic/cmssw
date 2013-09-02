@@ -14,11 +14,11 @@
 
 // user include files
 #include "FWCore/Framework/interface/global/EDProducerBase.h"
-#include "FWCore/Framework/src/CPCSentry.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "FWCore/Framework/interface/Run.h"
 #include "FWCore/Framework/src/edmodule_mightGet_config.h"
+#include "FWCore/Framework/src/PreallocationConfiguration.h"
 
 #include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
@@ -39,7 +39,6 @@ namespace edm {
     EDProducerBase::EDProducerBase():
     ProducerBase(),
     moduleDescription_(),
-    current_context_(nullptr),
     previousParentage_(),
     previousParentageId_() { }
     
@@ -49,14 +48,17 @@ namespace edm {
     
     bool
     EDProducerBase::doEvent(EventPrincipal& ep, EventSetup const& c,
-                            CurrentProcessingContext const* cpc,
                             ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpc);
       Event e(ep, moduleDescription_, mcc);
       e.setConsumer(this);
       this->produce(e.streamID(), e, c);
       commit_(e,&previousParentage_, &previousParentageId_);
       return true;
+    }
+
+    void
+    EDProducerBase::doPreallocate(PreallocationConfiguration const& iPrealloc) {
+      preallocStreams(iPrealloc.numberOfStreams());
     }
     
     void
@@ -71,10 +73,7 @@ namespace edm {
     
     void
     EDProducerBase::doBeginRun(RunPrincipal& rp, EventSetup const& c,
-                               CurrentProcessingContext const* cpc,
                                ModuleCallingContext const* mcc) {
-      
-      detail::CPCSentry sentry(current_context_, cpc);
       Run r(rp, moduleDescription_, mcc);
       r.setConsumer(this);
       Run const& cnstR = r;
@@ -86,9 +85,7 @@ namespace edm {
     
     void
     EDProducerBase::doEndRun(RunPrincipal& rp, EventSetup const& c,
-                             CurrentProcessingContext const* cpc,
                              ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpc);
       Run r(rp, moduleDescription_, mcc);
       r.setConsumer(this);
       Run const& cnstR = r;
@@ -100,9 +97,7 @@ namespace edm {
     
     void
     EDProducerBase::doBeginLuminosityBlock(LuminosityBlockPrincipal& lbp, EventSetup const& c,
-                                           CurrentProcessingContext const* cpc,
                                            ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpc);
       LuminosityBlock lb(lbp, moduleDescription_, mcc);
       lb.setConsumer(this);
       LuminosityBlock const& cnstLb = lb;
@@ -114,9 +109,7 @@ namespace edm {
     
     void
     EDProducerBase::doEndLuminosityBlock(LuminosityBlockPrincipal& lbp, EventSetup const& c,
-                                         CurrentProcessingContext const* cpc,
                                          ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpc);
       LuminosityBlock lb(lbp, moduleDescription_, mcc);
       lb.setConsumer(this);
       LuminosityBlock const& cnstLb = lb;
@@ -138,10 +131,8 @@ namespace edm {
     EDProducerBase::doStreamBeginRun(StreamID id,
                                      RunPrincipal& rp,
                                      EventSetup const& c,
-                                     CurrentProcessingContext const* cpcp,
                                      ModuleCallingContext const* mcc)
     {
-      detail::CPCSentry sentry(current_context_, cpcp);
       Run r(rp, moduleDescription_, mcc);
       r.setConsumer(this);
       this->doStreamBeginRun_(id, r, c);
@@ -150,9 +141,7 @@ namespace edm {
     EDProducerBase::doStreamEndRun(StreamID id,
                                    RunPrincipal& rp,
                                    EventSetup const& c,
-                                   CurrentProcessingContext const* cpcp,
                                    ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpcp);
       Run r(rp, moduleDescription_, mcc);
       r.setConsumer(this);
       this->doStreamEndRun_(id, r, c);
@@ -162,9 +151,7 @@ namespace edm {
     EDProducerBase::doStreamBeginLuminosityBlock(StreamID id,
                                                  LuminosityBlockPrincipal& lbp,
                                                  EventSetup const& c,
-                                                 CurrentProcessingContext const* cpcp,
                                                  ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpcp);
       LuminosityBlock lb(lbp, moduleDescription_, mcc);
       lb.setConsumer(this);
       this->doStreamBeginLuminosityBlock_(id,lb, c);
@@ -174,9 +161,7 @@ namespace edm {
     EDProducerBase::doStreamEndLuminosityBlock(StreamID id,
                                                LuminosityBlockPrincipal& lbp,
                                                EventSetup const& c,
-                                               CurrentProcessingContext const* cpcp,
                                                ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpcp);
       LuminosityBlock lb(lbp, moduleDescription_, mcc);
       lb.setConsumer(this);
       this->doStreamEndLuminosityBlock_(id,lb, c);
@@ -205,6 +190,7 @@ namespace edm {
       //postForkReacquireResources(iChildIndex, iNumberOfChildren);
     }
     
+    void EDProducerBase::preallocStreams(unsigned int) {}
     void EDProducerBase::doBeginStream_(StreamID id){}
     void EDProducerBase::doEndStream_(StreamID id) {}
     void EDProducerBase::doStreamBeginRun_(StreamID id, Run const& rp, EventSetup const& c) {}
@@ -229,11 +215,6 @@ namespace edm {
     void EDProducerBase::doEndRunProduce_(Run& rp, EventSetup const& c) {}
     void EDProducerBase::doBeginLuminosityBlockProduce_(LuminosityBlock& lbp, EventSetup const& c) {}
     void EDProducerBase::doEndLuminosityBlockProduce_(LuminosityBlock& lbp, EventSetup const& c) {}
-    
-    CurrentProcessingContext const*
-    EDProducerBase::currentContext() const {
-      return current_context_;
-    }
     
     void
     EDProducerBase::fillDescriptions(ConfigurationDescriptions& descriptions) {

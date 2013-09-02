@@ -8,7 +8,6 @@
 //
 // Original Author:  Chris Jones
 //         Created:  Fri Apr 29 13:26:29 CDT 2011
-// $Id: DQMRootOutputModule.cc,v 1.15 2012/05/14 20:07:26 wmtan Exp $
 //
 
 // system include files
@@ -215,6 +214,7 @@ private:
   TTree* m_indicesTree;
   
   std::vector<edm::ProcessHistoryID> m_seenHistories;
+  edm::ProcessHistoryRegistry m_processHistoryRegistry;
   edm::JobReport::Token m_jrToken;
 };
 
@@ -396,6 +396,7 @@ DQMRootOutputModule::writeLuminosityBlock(edm::LuminosityBlockPrincipal const& i
   edm::ProcessHistoryID id = iLumi.processHistoryID();
   std::vector<edm::ProcessHistoryID>::iterator itFind = std::find(m_seenHistories.begin(),m_seenHistories.end(),id);
   if(itFind == m_seenHistories.end()) {
+    m_processHistoryRegistry.registerProcessHistory(iLumi.processHistory());
     m_presentHistoryIndex = m_seenHistories.size();
     m_seenHistories.push_back(id);
   } else {
@@ -456,6 +457,7 @@ void DQMRootOutputModule::writeRun(edm::RunPrincipal const& iRun, edm::ModuleCal
   edm::ProcessHistoryID id = iRun.processHistoryID();
   std::vector<edm::ProcessHistoryID>::iterator itFind = std::find(m_seenHistories.begin(),m_seenHistories.end(),id);
   if(itFind == m_seenHistories.end()) {
+    m_processHistoryRegistry.registerProcessHistory(iRun.processHistory());
     m_presentHistoryIndex = m_seenHistories.size();
     m_seenHistories.push_back(id);
   } else {
@@ -507,12 +509,10 @@ void DQMRootOutputModule::startEndFile() {
   std::string passID;
   processHistoryTree->Branch(kProcessConfigurationPassID,&passID);
 
-  edm::ProcessHistoryRegistry* phr = edm::ProcessHistoryRegistry::instance();
-  assert(0!=phr);
   for(std::vector<edm::ProcessHistoryID>::iterator it = m_seenHistories.begin(), itEnd = m_seenHistories.end();
       it !=itEnd;
       ++it) {
-    const edm::ProcessHistory* history = phr->getMapped(*it);
+    const edm::ProcessHistory* history = m_processHistoryRegistry.getMapped(*it);
     assert(0!=history);
     index = 0;
     for(edm::ProcessHistory::collection_type::const_iterator itPC = history->begin(), itPCEnd = history->end();

@@ -16,7 +16,6 @@
 //
 // Original Author:  Chris Jones
 //         Created:  Thu, 18 Jul 2013 11:51:14 GMT
-// $Id$
 //
 
 // system include files
@@ -31,8 +30,13 @@
 
 namespace edm {
   class ModuleCallingContext;
+  class PreallocationConfiguration;
   class StreamID;
   
+  namespace maker {
+    template<typename T> class ModuleHolderT;
+  }
+
   namespace global {
     
     class EDAnalyzerBase : public EDConsumerBase
@@ -40,8 +44,8 @@ namespace edm {
       
     public:
       template <typename T> friend class edm::WorkerT;
+      template <typename T> friend class edm::maker::ModuleHolderT;
       typedef EDAnalyzerBase ModuleType;
-      typedef WorkerT<EDAnalyzerBase> WorkerType;
 
       EDAnalyzerBase();
       virtual ~EDAnalyzerBase();
@@ -53,15 +57,10 @@ namespace edm {
       // Warning: the returned moduleDescription will be invalid during construction
       ModuleDescription const& moduleDescription() const { return moduleDescription_; }
 
-    protected:
-      // The returned pointer will be null unless the this is currently
-      // executing its event loop function ('produce').
-      CurrentProcessingContext const* currentContext() const;
-      
     private:
       bool doEvent(EventPrincipal& ep, EventSetup const& c,
-                   CurrentProcessingContext const* cpcp,
                    ModuleCallingContext const*);
+      void doPreallocate(PreallocationConfiguration const&);
       void doBeginJob();
       void doEndJob();
       
@@ -70,36 +69,28 @@ namespace edm {
       void doStreamBeginRun(StreamID id,
                             RunPrincipal& ep,
                             EventSetup const& c,
-                            CurrentProcessingContext const* cpcp,
                             ModuleCallingContext const*);
       void doStreamEndRun(StreamID id,
                           RunPrincipal& ep,
                           EventSetup const& c,
-                          CurrentProcessingContext const* cpcp,
                           ModuleCallingContext const*);
       void doStreamBeginLuminosityBlock(StreamID id,
                                         LuminosityBlockPrincipal& ep,
                                         EventSetup const& c,
-                                        CurrentProcessingContext const* cpcp,
                                         ModuleCallingContext const*);
       void doStreamEndLuminosityBlock(StreamID id,
                                       LuminosityBlockPrincipal& ep,
                                       EventSetup const& c,
-                                      CurrentProcessingContext const* cpcp,
                                       ModuleCallingContext const*);
 
       
       void doBeginRun(RunPrincipal& rp, EventSetup const& c,
-                      CurrentProcessingContext const* cpc,
                       ModuleCallingContext const*);
       void doEndRun(RunPrincipal& rp, EventSetup const& c,
-                    CurrentProcessingContext const* cpc,
                     ModuleCallingContext const*);
       void doBeginLuminosityBlock(LuminosityBlockPrincipal& lbp, EventSetup const& c,
-                                  CurrentProcessingContext const* cpc,
                                   ModuleCallingContext const*);
       void doEndLuminosityBlock(LuminosityBlockPrincipal& lbp, EventSetup const& c,
-                                CurrentProcessingContext const* cpc,
                                 ModuleCallingContext const*);
       
       //For now, the following are just dummy implemenations with no ability for users to override
@@ -116,6 +107,7 @@ namespace edm {
       virtual void beginJob() {}
       virtual void endJob(){}
 
+      virtual void preallocStreams(unsigned int);
       virtual void doBeginStream_(StreamID id);
       virtual void doEndStream_(StreamID id);
       virtual void doStreamBeginRun_(StreamID id, Run const& rp, EventSetup const& c);
@@ -138,7 +130,6 @@ namespace edm {
         moduleDescription_ = md;
       }
       ModuleDescription moduleDescription_;
-      CurrentProcessingContext const* current_context_; //Change in future
 
       std::function<void(BranchDescription const&)> callWhenNewProductsRegistered_;
     };

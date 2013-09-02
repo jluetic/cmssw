@@ -36,6 +36,7 @@ namespace edm {
   class HistoryAppender;
   class LuminosityBlockPrincipal;
   class ModuleCallingContext;
+  class ProcessHistoryRegistry;
   class RunPrincipal;
   class UnscheduledHandler;
 
@@ -52,10 +53,11 @@ namespace edm {
         boost::shared_ptr<BranchIDListHelper const> branchIDListHelper,
         ProcessConfiguration const& pc,
         HistoryAppender* historyAppender,
-        StreamID const& streamID = StreamID::invalidStreamID());
+        unsigned int streamIndex = 0);
     ~EventPrincipal() {}
 
     void fillEventPrincipal(EventAuxiliary const& aux,
+        ProcessHistoryRegistry& processHistoryRegistry,
         boost::shared_ptr<EventSelectionIDVector> eventSelectionIDs = boost::shared_ptr<EventSelectionIDVector>(),
         boost::shared_ptr<BranchListIndexes> branchListIndexes = boost::shared_ptr<BranchListIndexes>(),
         boost::shared_ptr<BranchMapper> mapper = boost::shared_ptr<BranchMapper>(new BranchMapper),
@@ -138,12 +140,12 @@ namespace edm {
     getByProductID(ProductID const& oid) const;
 
     void put(
-        ConstBranchDescription const& bd,
+        BranchDescription const& bd,
         WrapperOwningHolder const& edp,
         ProductProvenance const& productProvenance);
 
     void putOnRead(
-        ConstBranchDescription const& bd,
+        BranchDescription const& bd,
         void const* product,
         ProductProvenance const& productProvenance);
 
@@ -169,6 +171,19 @@ namespace edm {
                                  ModuleCallingContext const* mcc) const override;
 
   private:
+
+    class UnscheduledSentry {
+    public:
+      UnscheduledSentry(std::vector<std::string>* moduleLabelsRunning, std::string const& moduleLabel) :
+        moduleLabelsRunning_(moduleLabelsRunning) {
+        moduleLabelsRunning_->push_back(moduleLabel);
+      }
+      ~UnscheduledSentry() {
+        moduleLabelsRunning_->pop_back();
+      }
+    private:
+      std::vector<std::string>* moduleLabelsRunning_;
+    };
 
     EventAuxiliary aux_;
 

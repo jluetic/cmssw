@@ -23,20 +23,26 @@ namespace edm {
   class ExceptionCollector;
   class StreamID;
   class StreamContext;
+  class ModuleRegistry;
+  class PreallocationConfiguration;
   
   class WorkerManager {
   public:
     typedef std::vector<Worker*> AllWorkers;
 
-    WorkerManager(boost::shared_ptr<ActivityRegistry> actReg, ActionTable const& actions);
+    WorkerManager(boost::shared_ptr<ActivityRegistry> actReg, ExceptionToActionTable const& actions);
 
+    WorkerManager(boost::shared_ptr<ModuleRegistry> modReg,
+                  boost::shared_ptr<ActivityRegistry> actReg,
+                  ExceptionToActionTable const& actions);
     void addToUnscheduledWorkers(ParameterSet& pset,
-                      ProductRegistry& preg,
-                      boost::shared_ptr<ProcessConfiguration> processConfiguration,
-                      std::string label,
-                      bool useStopwatch,
-                      std::set<std::string>& unscheduledLabels,
-                      std::vector<std::string>& shouldBeUsedLabels);
+                                 ProductRegistry& preg,
+                                 PreallocationConfiguration const* prealloc,
+                                 boost::shared_ptr<ProcessConfiguration> processConfiguration,
+                                 std::string label,
+                                 bool useStopwatch,
+                                 std::set<std::string>& unscheduledLabels,
+                                 std::vector<std::string>& shouldBeUsedLabels);
 
     void setOnDemandProducts(ProductRegistry& pregistry, std::set<std::string> const& unscheduledLabels) const;
 
@@ -59,12 +65,13 @@ namespace edm {
 
     void addToAllWorkers(Worker* w, bool useStopwatch);
 
-    ActionTable const&  actionTable() const {return *actionTable_;}
+    ExceptionToActionTable const&  actionTable() const {return *actionTable_;}
 
     Worker* getWorker(ParameterSet& pset,
                       ProductRegistry& preg,
+                      PreallocationConfiguration const* prealloc,
                       boost::shared_ptr<ProcessConfiguration const> processConfiguration,
-                      std::string label);
+                      std::string const& label);
 
   private:
 
@@ -73,7 +80,7 @@ namespace edm {
     void setupOnDemandSystem(EventPrincipal& principal, EventSetup const& es);
 
     WorkerRegistry      workerReg_;
-    ActionTable const*  actionTable_;
+    ExceptionToActionTable const*  actionTable_;
 
     AllWorkers          allWorkers_;
 
@@ -101,10 +108,10 @@ namespace edm {
           }
         }
         catch(cms::Exception& e) {
-          actions::ActionCodes action = (T::isEvent_ ? actionTable_->find(e.category()) : actions::Rethrow);
-          assert (action != actions::IgnoreCompletely);
-          assert (action != actions::FailPath);
-          if (action == actions::SkipEvent) {
+          exception_actions::ActionCodes action = (T::isEvent_ ? actionTable_->find(e.category()) : exception_actions::Rethrow);
+          assert (action != exception_actions::IgnoreCompletely);
+          assert (action != exception_actions::FailPath);
+          if (action == exception_actions::SkipEvent) {
             printCmsExceptionWarning("SkipEvent", e);
           } else {
             throw;

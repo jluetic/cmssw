@@ -14,11 +14,12 @@
 
 // user include files
 #include "FWCore/Framework/interface/global/EDAnalyzerBase.h"
-#include "FWCore/Framework/src/CPCSentry.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "FWCore/Framework/interface/Run.h"
 #include "FWCore/Framework/src/edmodule_mightGet_config.h"
+#include "FWCore/Framework/src/PreallocationConfiguration.h"
+
 
 #include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
@@ -42,8 +43,7 @@ namespace edm {
     // constructors and destructor
     //
     EDAnalyzerBase::EDAnalyzerBase():
-    moduleDescription_(),
-    current_context_(nullptr) { }
+    moduleDescription_() { }
     
     EDAnalyzerBase::~EDAnalyzerBase()
     {
@@ -51,15 +51,18 @@ namespace edm {
     
     bool
     EDAnalyzerBase::doEvent(EventPrincipal& ep, EventSetup const& c,
-                            CurrentProcessingContext const* cpc,
                             ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpc);
       Event e(ep, moduleDescription_, mcc);
       e.setConsumer(this);
       this->analyze(e.streamID(), e, c);
       return true;
     }
     
+    void
+    EDAnalyzerBase::doPreallocate(PreallocationConfiguration const& iPrealloc) {
+      preallocStreams(iPrealloc.numberOfStreams());
+    }
+
     void
     EDAnalyzerBase::doBeginJob() {
       this->beginJob();
@@ -72,10 +75,8 @@ namespace edm {
     
     void
     EDAnalyzerBase::doBeginRun(RunPrincipal& rp, EventSetup const& c,
-                               CurrentProcessingContext const* cpc,
                                ModuleCallingContext const* mcc) {
       
-      detail::CPCSentry sentry(current_context_, cpc);
       Run r(rp, moduleDescription_, mcc);
       r.setConsumer(this);
       Run const& cnstR = r;
@@ -85,9 +86,7 @@ namespace edm {
     
     void
     EDAnalyzerBase::doEndRun(RunPrincipal& rp, EventSetup const& c,
-                             CurrentProcessingContext const* cpc,
                              ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpc);
       Run r(rp, moduleDescription_, mcc);
       r.setConsumer(this);
       Run const& cnstR = r;
@@ -97,9 +96,7 @@ namespace edm {
     
     void
     EDAnalyzerBase::doBeginLuminosityBlock(LuminosityBlockPrincipal& lbp, EventSetup const& c,
-                                           CurrentProcessingContext const* cpc,
                                            ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpc);
       LuminosityBlock lb(lbp, moduleDescription_, mcc);
       lb.setConsumer(this);
       LuminosityBlock const& cnstLb = lb;
@@ -109,9 +106,7 @@ namespace edm {
     
     void
     EDAnalyzerBase::doEndLuminosityBlock(LuminosityBlockPrincipal& lbp, EventSetup const& c,
-                                         CurrentProcessingContext const* cpc,
                                          ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpc);
       LuminosityBlock lb(lbp, moduleDescription_, mcc);
       lb.setConsumer(this);
       LuminosityBlock const& cnstLb = lb;
@@ -131,10 +126,8 @@ namespace edm {
     EDAnalyzerBase::doStreamBeginRun(StreamID id,
                                      RunPrincipal& rp,
                                      EventSetup const& c,
-                                     CurrentProcessingContext const* cpcp,
                                      ModuleCallingContext const* mcc)
     {
-      detail::CPCSentry sentry(current_context_, cpcp);
       Run r(rp, moduleDescription_, mcc);
       r.setConsumer(this);
       this->doStreamBeginRun_(id, r, c);
@@ -143,9 +136,7 @@ namespace edm {
     EDAnalyzerBase::doStreamEndRun(StreamID id,
                                    RunPrincipal& rp,
                                    EventSetup const& c,
-                                   CurrentProcessingContext const* cpcp,
                                    ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpcp);
       Run r(rp, moduleDescription_, mcc);
       r.setConsumer(this);
       this->doStreamEndRun_(id, r, c);
@@ -155,9 +146,7 @@ namespace edm {
     EDAnalyzerBase::doStreamBeginLuminosityBlock(StreamID id,
                                                  LuminosityBlockPrincipal& lbp,
                                                  EventSetup const& c,
-                                                 CurrentProcessingContext const* cpcp,
                                                  ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpcp);
       LuminosityBlock lb(lbp, moduleDescription_, mcc);
       lb.setConsumer(this);
       this->doStreamBeginLuminosityBlock_(id,lb, c);
@@ -167,9 +156,7 @@ namespace edm {
     EDAnalyzerBase::doStreamEndLuminosityBlock(StreamID id,
                                                LuminosityBlockPrincipal& lbp,
                                                EventSetup const& c,
-                                               CurrentProcessingContext const* cpcp,
                                                ModuleCallingContext const* mcc) {
-      detail::CPCSentry sentry(current_context_, cpcp);
       LuminosityBlock lb(lbp, moduleDescription_, mcc);
       lb.setConsumer(this);
       this->doStreamEndLuminosityBlock_(id,lb, c);
@@ -198,6 +185,7 @@ namespace edm {
       //postForkReacquireResources(iChildIndex, iNumberOfChildren);
     }
     
+    void EDAnalyzerBase::preallocStreams(unsigned int) {}
     void EDAnalyzerBase::doBeginStream_(StreamID id){}
     void EDAnalyzerBase::doEndStream_(StreamID id) {}
     void EDAnalyzerBase::doStreamBeginRun_(StreamID id, Run const& rp, EventSetup const& c) {}
@@ -217,11 +205,6 @@ namespace edm {
     void EDAnalyzerBase::doEndLuminosityBlock_(LuminosityBlock const& lbp, EventSetup const& c) {}
     void EDAnalyzerBase::doBeginLuminosityBlockSummary_(LuminosityBlock const& rp, EventSetup const& c) {}
     void EDAnalyzerBase::doEndLuminosityBlockSummary_(LuminosityBlock const& lb, EventSetup const& c) {}
-    
-    CurrentProcessingContext const*
-    EDAnalyzerBase::currentContext() const {
-      return current_context_;
-    }
     
     void
     EDAnalyzerBase::fillDescriptions(ConfigurationDescriptions& descriptions) {

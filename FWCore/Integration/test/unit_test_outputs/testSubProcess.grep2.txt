@@ -1,5 +1,7 @@
 ++ constructing source:EmptySource
 ++ construction finished:EmptySource
+++ constructing module: TriggerResults
+++ construction finished: TriggerResults
 ++ constructing module: thingWithMergeProducer
 ++ construction finished: thingWithMergeProducer
 ++ constructing module: get
@@ -28,8 +30,6 @@
 ++ construction finished: getInt
 ++ constructing module: dependsOnNoPut
 ++ construction finished: dependsOnNoPut
-++ constructing module: TriggerResults
-++ construction finished: TriggerResults
 ++ constructing module: out
 ++ construction finished: out
 ++ ModuleBeginJob: thingWithMergeProducer
@@ -60,10 +60,10 @@
 ++ ModuleBeginJob finished: getInt
 ++ ModuleBeginJob: dependsOnNoPut
 ++ ModuleBeginJob finished: dependsOnNoPut
-++ ModuleBeginJob: TriggerResults
-++ ModuleBeginJob finished: TriggerResults
 ++ ModuleBeginJob: out
 ++ ModuleBeginJob finished: out
+++ ModuleBeginJob: TriggerResults
+++ ModuleBeginJob finished: TriggerResults
 ++ Job started
 ++++ ModuleBeginStream: thingWithMergeProducer
 ++++ ModuleBeginStream finished
@@ -118,6 +118,8 @@
 ++++++ ModuleGlobalBeginRun finished: getInt
 ++++++ ModuleGlobalBeginRun: noPut
 ++++++ ModuleGlobalBeginRun finished: noPut
+++++++ ModuleGlobalBeginRun: TriggerResults
+++++++ ModuleGlobalBeginRun finished: TriggerResults
 ++++ GlobalBeginRun finished
 ++++ GlobalBeginRun run: 1 time: 1
 ++++ GlobalBeginRun finished
@@ -136,6 +138,8 @@
 ++++++ ModuleGlobalBeginRun finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginRun: out
 ++++++ ModuleGlobalBeginRun finished: out
+++++++ ModuleGlobalBeginRun: TriggerResults
+++++++ ModuleGlobalBeginRun finished: TriggerResults
 ++++ GlobalBeginRun finished
 ++++ StreamBeginRun run: 1 time: 1
 ++++ StreamBeginRun finished
@@ -196,6 +200,8 @@
 ++++++ ModuleGlobalBeginLumi finished: getInt
 ++++++ ModuleGlobalBeginLumi: noPut
 ++++++ ModuleGlobalBeginLumi finished: noPut
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ GlobalBeginLumi run: 1 lumi: 1 time: 1
 ++++ GlobalBeginLumi finished
@@ -214,6 +220,8 @@
 ++++++ ModuleGlobalBeginLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginLumi: out
 ++++++ ModuleGlobalBeginLumi finished: out
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ StreamBeginLumi run: 1 lumi: 1 time: 1
 ++++ StreamBeginLumi finished
@@ -550,6 +558,8 @@
 ++++++ ModuleGlobalEndLumi finished: getInt
 ++++++ ModuleGlobalEndLumi: noPut
 ++++++ ModuleGlobalEndLumi finished: noPut
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ GlobalEndLumi run: 1 lumi: 1 time: 1
 ++++ GlobalEndLumi finished
@@ -568,6 +578,8 @@
 ++++++ ModuleGlobalEndLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalEndLumi: out
 ++++++ ModuleGlobalEndLumi finished: out
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ source lumi
 ++++ finished: source lumi
@@ -590,6 +602,8 @@
 ++++++ ModuleGlobalBeginLumi finished: getInt
 ++++++ ModuleGlobalBeginLumi: noPut
 ++++++ ModuleGlobalBeginLumi finished: noPut
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ GlobalBeginLumi run: 1 lumi: 2 time: 25000001
 ++++ GlobalBeginLumi finished
@@ -608,6 +622,8 @@
 ++++++ ModuleGlobalBeginLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginLumi: out
 ++++++ ModuleGlobalBeginLumi finished: out
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ StreamBeginLumi run: 1 lumi: 2 time: 25000001
 ++++ StreamBeginLumi finished
@@ -944,6 +960,8 @@
 ++++++ ModuleGlobalEndLumi finished: getInt
 ++++++ ModuleGlobalEndLumi: noPut
 ++++++ ModuleGlobalEndLumi finished: noPut
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ GlobalEndLumi run: 1 lumi: 2 time: 25000001
 ++++ GlobalEndLumi finished
@@ -962,6 +980,8 @@
 ++++++ ModuleGlobalEndLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalEndLumi: out
 ++++++ ModuleGlobalEndLumi finished: out
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ source lumi
 ++++ finished: source lumi
@@ -984,6 +1004,8 @@
 ++++++ ModuleGlobalBeginLumi finished: getInt
 ++++++ ModuleGlobalBeginLumi: noPut
 ++++++ ModuleGlobalBeginLumi finished: noPut
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ GlobalBeginLumi run: 1 lumi: 3 time: 45000001
 ++++ GlobalBeginLumi finished
@@ -1002,6 +1024,8 @@
 ++++++ ModuleGlobalBeginLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginLumi: out
 ++++++ ModuleGlobalBeginLumi finished: out
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ StreamBeginLumi run: 1 lumi: 3 time: 45000001
 ++++ StreamBeginLumi finished
@@ -1218,6 +1242,8 @@
 ++++++ ModuleGlobalEndLumi finished: getInt
 ++++++ ModuleGlobalEndLumi: noPut
 ++++++ ModuleGlobalEndLumi finished: noPut
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ GlobalEndLumi run: 1 lumi: 3 time: 45000001
 ++++ GlobalEndLumi finished
@@ -1236,6 +1262,8 @@
 ++++++ ModuleGlobalEndLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalEndLumi: out
 ++++++ ModuleGlobalEndLumi finished: out
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ StreamEndRun run: 1 time: 50000001
 ++++ StreamEndRun finished
@@ -1294,6 +1322,8 @@
 ++++++ ModuleGlobalEndRun finished: getInt
 ++++++ ModuleGlobalEndRun: noPut
 ++++++ ModuleGlobalEndRun finished: noPut
+++++++ ModuleGlobalEndRun: TriggerResults
+++++++ ModuleGlobalEndRun finished: TriggerResults
 ++++ GlobalEndRun finished
 ++++ GlobalEndRun run: 1 time: 0
 ++++ GlobalEndRun finished
@@ -1312,6 +1342,8 @@
 ++++++ ModuleGlobalEndRun finished: dependsOnNoPut
 ++++++ ModuleGlobalEndRun: out
 ++++++ ModuleGlobalEndRun finished: out
+++++++ ModuleGlobalEndRun: TriggerResults
+++++++ ModuleGlobalEndRun finished: TriggerResults
 ++++ GlobalEndRun finished
 ++++ source run
 ++++ finished: source run
@@ -1334,6 +1366,8 @@
 ++++++ ModuleGlobalBeginRun finished: getInt
 ++++++ ModuleGlobalBeginRun: noPut
 ++++++ ModuleGlobalBeginRun finished: noPut
+++++++ ModuleGlobalBeginRun: TriggerResults
+++++++ ModuleGlobalBeginRun finished: TriggerResults
 ++++ GlobalBeginRun finished
 ++++ GlobalBeginRun run: 2 time: 55000001
 ++++ GlobalBeginRun finished
@@ -1352,6 +1386,8 @@
 ++++++ ModuleGlobalBeginRun finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginRun: out
 ++++++ ModuleGlobalBeginRun finished: out
+++++++ ModuleGlobalBeginRun: TriggerResults
+++++++ ModuleGlobalBeginRun finished: TriggerResults
 ++++ GlobalBeginRun finished
 ++++ StreamBeginRun run: 2 time: 55000001
 ++++ StreamBeginRun finished
@@ -1412,6 +1448,8 @@
 ++++++ ModuleGlobalBeginLumi finished: getInt
 ++++++ ModuleGlobalBeginLumi: noPut
 ++++++ ModuleGlobalBeginLumi finished: noPut
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ GlobalBeginLumi run: 2 lumi: 1 time: 55000001
 ++++ GlobalBeginLumi finished
@@ -1430,6 +1468,8 @@
 ++++++ ModuleGlobalBeginLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginLumi: out
 ++++++ ModuleGlobalBeginLumi finished: out
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ StreamBeginLumi run: 2 lumi: 1 time: 55000001
 ++++ StreamBeginLumi finished
@@ -1766,6 +1806,8 @@
 ++++++ ModuleGlobalEndLumi finished: getInt
 ++++++ ModuleGlobalEndLumi: noPut
 ++++++ ModuleGlobalEndLumi finished: noPut
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ GlobalEndLumi run: 2 lumi: 1 time: 55000001
 ++++ GlobalEndLumi finished
@@ -1784,6 +1826,8 @@
 ++++++ ModuleGlobalEndLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalEndLumi: out
 ++++++ ModuleGlobalEndLumi finished: out
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ source lumi
 ++++ finished: source lumi
@@ -1806,6 +1850,8 @@
 ++++++ ModuleGlobalBeginLumi finished: getInt
 ++++++ ModuleGlobalBeginLumi: noPut
 ++++++ ModuleGlobalBeginLumi finished: noPut
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ GlobalBeginLumi run: 2 lumi: 2 time: 75000001
 ++++ GlobalBeginLumi finished
@@ -1824,6 +1870,8 @@
 ++++++ ModuleGlobalBeginLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginLumi: out
 ++++++ ModuleGlobalBeginLumi finished: out
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ StreamBeginLumi run: 2 lumi: 2 time: 75000001
 ++++ StreamBeginLumi finished
@@ -2160,6 +2208,8 @@
 ++++++ ModuleGlobalEndLumi finished: getInt
 ++++++ ModuleGlobalEndLumi: noPut
 ++++++ ModuleGlobalEndLumi finished: noPut
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ GlobalEndLumi run: 2 lumi: 2 time: 75000001
 ++++ GlobalEndLumi finished
@@ -2178,6 +2228,8 @@
 ++++++ ModuleGlobalEndLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalEndLumi: out
 ++++++ ModuleGlobalEndLumi finished: out
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ source lumi
 ++++ finished: source lumi
@@ -2200,6 +2252,8 @@
 ++++++ ModuleGlobalBeginLumi finished: getInt
 ++++++ ModuleGlobalBeginLumi: noPut
 ++++++ ModuleGlobalBeginLumi finished: noPut
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ GlobalBeginLumi run: 2 lumi: 3 time: 95000001
 ++++ GlobalBeginLumi finished
@@ -2218,6 +2272,8 @@
 ++++++ ModuleGlobalBeginLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginLumi: out
 ++++++ ModuleGlobalBeginLumi finished: out
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ StreamBeginLumi run: 2 lumi: 3 time: 95000001
 ++++ StreamBeginLumi finished
@@ -2434,6 +2490,8 @@
 ++++++ ModuleGlobalEndLumi finished: getInt
 ++++++ ModuleGlobalEndLumi: noPut
 ++++++ ModuleGlobalEndLumi finished: noPut
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ GlobalEndLumi run: 2 lumi: 3 time: 95000001
 ++++ GlobalEndLumi finished
@@ -2452,6 +2510,8 @@
 ++++++ ModuleGlobalEndLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalEndLumi: out
 ++++++ ModuleGlobalEndLumi finished: out
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ StreamEndRun run: 2 time: 100000001
 ++++ StreamEndRun finished
@@ -2510,6 +2570,8 @@
 ++++++ ModuleGlobalEndRun finished: getInt
 ++++++ ModuleGlobalEndRun: noPut
 ++++++ ModuleGlobalEndRun finished: noPut
+++++++ ModuleGlobalEndRun: TriggerResults
+++++++ ModuleGlobalEndRun finished: TriggerResults
 ++++ GlobalEndRun finished
 ++++ GlobalEndRun run: 2 time: 0
 ++++ GlobalEndRun finished
@@ -2528,6 +2590,8 @@
 ++++++ ModuleGlobalEndRun finished: dependsOnNoPut
 ++++++ ModuleGlobalEndRun: out
 ++++++ ModuleGlobalEndRun finished: out
+++++++ ModuleGlobalEndRun: TriggerResults
+++++++ ModuleGlobalEndRun finished: TriggerResults
 ++++ GlobalEndRun finished
 ++++ source run
 ++++ finished: source run
@@ -2550,6 +2614,8 @@
 ++++++ ModuleGlobalBeginRun finished: getInt
 ++++++ ModuleGlobalBeginRun: noPut
 ++++++ ModuleGlobalBeginRun finished: noPut
+++++++ ModuleGlobalBeginRun: TriggerResults
+++++++ ModuleGlobalBeginRun finished: TriggerResults
 ++++ GlobalBeginRun finished
 ++++ GlobalBeginRun run: 3 time: 105000001
 ++++ GlobalBeginRun finished
@@ -2568,6 +2634,8 @@
 ++++++ ModuleGlobalBeginRun finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginRun: out
 ++++++ ModuleGlobalBeginRun finished: out
+++++++ ModuleGlobalBeginRun: TriggerResults
+++++++ ModuleGlobalBeginRun finished: TriggerResults
 ++++ GlobalBeginRun finished
 ++++ StreamBeginRun run: 3 time: 105000001
 ++++ StreamBeginRun finished
@@ -2628,6 +2696,8 @@
 ++++++ ModuleGlobalBeginLumi finished: getInt
 ++++++ ModuleGlobalBeginLumi: noPut
 ++++++ ModuleGlobalBeginLumi finished: noPut
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ GlobalBeginLumi run: 3 lumi: 1 time: 105000001
 ++++ GlobalBeginLumi finished
@@ -2646,6 +2716,8 @@
 ++++++ ModuleGlobalBeginLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginLumi: out
 ++++++ ModuleGlobalBeginLumi finished: out
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ StreamBeginLumi run: 3 lumi: 1 time: 105000001
 ++++ StreamBeginLumi finished
@@ -2982,6 +3054,8 @@
 ++++++ ModuleGlobalEndLumi finished: getInt
 ++++++ ModuleGlobalEndLumi: noPut
 ++++++ ModuleGlobalEndLumi finished: noPut
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ GlobalEndLumi run: 3 lumi: 1 time: 105000001
 ++++ GlobalEndLumi finished
@@ -3000,6 +3074,8 @@
 ++++++ ModuleGlobalEndLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalEndLumi: out
 ++++++ ModuleGlobalEndLumi finished: out
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ source lumi
 ++++ finished: source lumi
@@ -3022,6 +3098,8 @@
 ++++++ ModuleGlobalBeginLumi finished: getInt
 ++++++ ModuleGlobalBeginLumi: noPut
 ++++++ ModuleGlobalBeginLumi finished: noPut
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ GlobalBeginLumi run: 3 lumi: 2 time: 125000001
 ++++ GlobalBeginLumi finished
@@ -3040,6 +3118,8 @@
 ++++++ ModuleGlobalBeginLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginLumi: out
 ++++++ ModuleGlobalBeginLumi finished: out
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ StreamBeginLumi run: 3 lumi: 2 time: 125000001
 ++++ StreamBeginLumi finished
@@ -3376,6 +3456,8 @@
 ++++++ ModuleGlobalEndLumi finished: getInt
 ++++++ ModuleGlobalEndLumi: noPut
 ++++++ ModuleGlobalEndLumi finished: noPut
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ GlobalEndLumi run: 3 lumi: 2 time: 125000001
 ++++ GlobalEndLumi finished
@@ -3394,6 +3476,8 @@
 ++++++ ModuleGlobalEndLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalEndLumi: out
 ++++++ ModuleGlobalEndLumi finished: out
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ source lumi
 ++++ finished: source lumi
@@ -3416,6 +3500,8 @@
 ++++++ ModuleGlobalBeginLumi finished: getInt
 ++++++ ModuleGlobalBeginLumi: noPut
 ++++++ ModuleGlobalBeginLumi finished: noPut
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ GlobalBeginLumi run: 3 lumi: 3 time: 145000001
 ++++ GlobalBeginLumi finished
@@ -3434,6 +3520,8 @@
 ++++++ ModuleGlobalBeginLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalBeginLumi: out
 ++++++ ModuleGlobalBeginLumi finished: out
+++++++ ModuleGlobalBeginLumi: TriggerResults
+++++++ ModuleGlobalBeginLumi finished: TriggerResults
 ++++ GlobalBeginLumi finished
 ++++ StreamBeginLumi run: 3 lumi: 3 time: 145000001
 ++++ StreamBeginLumi finished
@@ -3650,6 +3738,8 @@
 ++++++ ModuleGlobalEndLumi finished: getInt
 ++++++ ModuleGlobalEndLumi: noPut
 ++++++ ModuleGlobalEndLumi finished: noPut
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ GlobalEndLumi run: 3 lumi: 3 time: 145000001
 ++++ GlobalEndLumi finished
@@ -3668,6 +3758,8 @@
 ++++++ ModuleGlobalEndLumi finished: dependsOnNoPut
 ++++++ ModuleGlobalEndLumi: out
 ++++++ ModuleGlobalEndLumi finished: out
+++++++ ModuleGlobalEndLumi: TriggerResults
+++++++ ModuleGlobalEndLumi finished: TriggerResults
 ++++ GlobalEndLumi finished
 ++++ StreamEndRun run: 3 time: 150000001
 ++++ StreamEndRun finished
@@ -3726,6 +3818,8 @@
 ++++++ ModuleGlobalEndRun finished: getInt
 ++++++ ModuleGlobalEndRun: noPut
 ++++++ ModuleGlobalEndRun finished: noPut
+++++++ ModuleGlobalEndRun: TriggerResults
+++++++ ModuleGlobalEndRun finished: TriggerResults
 ++++ GlobalEndRun finished
 ++++ GlobalEndRun run: 3 time: 0
 ++++ GlobalEndRun finished
@@ -3744,6 +3838,8 @@
 ++++++ ModuleGlobalEndRun finished: dependsOnNoPut
 ++++++ ModuleGlobalEndRun: out
 ++++++ ModuleGlobalEndRun finished: out
+++++++ ModuleGlobalEndRun: TriggerResults
+++++++ ModuleGlobalEndRun finished: TriggerResults
 ++++ GlobalEndRun finished
 ++++ ModuleEndStream: 
 ++++ ModuleEndStream finished
@@ -3805,8 +3901,8 @@
 ++ ModuleEndJob finished: getInt
 ++ ModuleEndJob: dependsOnNoPut
 ++ ModuleEndJob finished: dependsOnNoPut
-++ ModuleEndJob: TriggerResults
-++ ModuleEndJob finished: TriggerResults
 ++ ModuleEndJob: out
 ++ ModuleEndJob finished: out
+++ ModuleEndJob: TriggerResults
+++ ModuleEndJob finished: TriggerResults
 ++ Job ended

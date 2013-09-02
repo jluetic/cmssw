@@ -11,9 +11,12 @@
 #include <functional>
 #include "FWCore/Framework/src/Worker.h"
 #include "FWCore/Framework/src/WorkerT.h"
+#include "FWCore/Framework/src/ModuleHolder.h"
+#include "FWCore/Framework/src/PreallocationConfiguration.h"
 #include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/Framework/interface/stream/EDProducerAdaptor.h"
 #include "FWCore/Framework/interface/OccurrenceTraits.h"
+#include "DataFormats/Provenance/interface/ProcessHistoryRegistry.h"
 #include "DataFormats/Provenance/interface/ProductRegistry.h"
 #include "DataFormats/Provenance/interface/BranchIDListHelper.h"
 #include "FWCore/Framework/interface/HistoryAppender.h"
@@ -24,7 +27,7 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "cppunit/extensions/HelperMacros.h"
 
 class testStreamModule: public CppUnit::TestFixture 
 {
@@ -92,13 +95,11 @@ private:
   boost::shared_ptr<edm::LuminosityBlockPrincipal> m_lbp;
   boost::shared_ptr<edm::RunPrincipal> m_rp;
   edm::EventSetup* m_es = nullptr;
-  edm::CurrentProcessingContext* m_context = nullptr;
   edm::ModuleDescription m_desc = {"Dummy","dummy"};
   edm::CPUTimer* m_timer = nullptr;
-  edm::WorkerParams m_params;
   
   template<typename T, typename U>
-  void testTransitions(std::unique_ptr<U>&& iMod, Expectations const& iExpect);
+  void testTransitions(U* iMod, Expectations const& iExpect);
   
   template<typename T>
   void runTest(Expectations const& iExpect);
@@ -389,49 +390,59 @@ m_ep()
   m_ep.reset(new edm::EventPrincipal(m_prodReg,
                                      m_idHelper,
                                      m_procConfig,nullptr,*pID));
-  m_ep->fillEventPrincipal(eventAux);
+  edm::ProcessHistoryRegistry phr;
+  m_ep->fillEventPrincipal(eventAux, phr);
   m_ep->setLuminosityBlockPrincipal(m_lbp);
 
-  edm::ParentContext parentContext;
-  edm::StreamContext streamContext(s_streamID0, nullptr);
 
   //For each transition, bind a lambda which will call the proper method of the Worker
-  m_transToFunc[Trans::kBeginStream] = [this, &streamContext](edm::Worker* iBase) {
+  m_transToFunc[Trans::kBeginStream] = [this](edm::Worker* iBase) {
+    edm::StreamContext streamContext(s_streamID0, nullptr);
     iBase->beginStream(s_streamID0, streamContext); };
   
-  m_transToFunc[Trans::kGlobalBeginRun] = [this,&parentContext](edm::Worker* iBase) {
+  m_transToFunc[Trans::kGlobalBeginRun] = [this](edm::Worker* iBase) {
     typedef edm::OccurrenceTraits<edm::RunPrincipal, edm::BranchActionGlobalBegin> Traits;
-    iBase->doWork<Traits>(*m_rp,*m_es,m_context,m_timer, s_streamID0, parentContext, nullptr); };
-  m_transToFunc[Trans::kStreamBeginRun] = [this,&parentContext](edm::Worker* iBase) {
+    edm::ParentContext parentContext;
+    iBase->doWork<Traits>(*m_rp,*m_es,m_timer, s_streamID0, parentContext, nullptr); };
+  m_transToFunc[Trans::kStreamBeginRun] = [this](edm::Worker* iBase) {
     typedef edm::OccurrenceTraits<edm::RunPrincipal, edm::BranchActionStreamBegin> Traits;
-    iBase->doWork<Traits>(*m_rp,*m_es,m_context,m_timer, s_streamID0, parentContext, nullptr); };
+    edm::ParentContext parentContext;
+    iBase->doWork<Traits>(*m_rp,*m_es,m_timer, s_streamID0, parentContext, nullptr); };
   
-  m_transToFunc[Trans::kGlobalBeginLuminosityBlock] = [this,&parentContext](edm::Worker* iBase) {
+  m_transToFunc[Trans::kGlobalBeginLuminosityBlock] = [this](edm::Worker* iBase) {
     typedef edm::OccurrenceTraits<edm::LuminosityBlockPrincipal, edm::BranchActionGlobalBegin> Traits;
-    iBase->doWork<Traits>(*m_lbp,*m_es,m_context,m_timer, s_streamID0, parentContext, nullptr); };
-  m_transToFunc[Trans::kStreamBeginLuminosityBlock] = [this,&parentContext](edm::Worker* iBase) {
+    edm::ParentContext parentContext;
+    iBase->doWork<Traits>(*m_lbp,*m_es,m_timer, s_streamID0, parentContext, nullptr); };
+  m_transToFunc[Trans::kStreamBeginLuminosityBlock] = [this](edm::Worker* iBase) {
     typedef edm::OccurrenceTraits<edm::LuminosityBlockPrincipal, edm::BranchActionStreamBegin> Traits;
-    iBase->doWork<Traits>(*m_lbp,*m_es,m_context,m_timer, s_streamID0, parentContext, nullptr); };
+    edm::ParentContext parentContext;
+    iBase->doWork<Traits>(*m_lbp,*m_es,m_timer, s_streamID0, parentContext, nullptr); };
   
-  m_transToFunc[Trans::kEvent] = [this,&parentContext](edm::Worker* iBase) {
+  m_transToFunc[Trans::kEvent] = [this](edm::Worker* iBase) {
     typedef edm::OccurrenceTraits<edm::EventPrincipal, edm::BranchActionStreamBegin> Traits;
-    iBase->doWork<Traits>(*m_ep,*m_es,m_context,m_timer, s_streamID0, parentContext, nullptr); };
+    edm::ParentContext parentContext;
+    iBase->doWork<Traits>(*m_ep,*m_es,m_timer, s_streamID0, parentContext, nullptr); };
 
-  m_transToFunc[Trans::kStreamEndLuminosityBlock] = [this,&parentContext](edm::Worker* iBase) {
+  m_transToFunc[Trans::kStreamEndLuminosityBlock] = [this](edm::Worker* iBase) {
     typedef edm::OccurrenceTraits<edm::LuminosityBlockPrincipal, edm::BranchActionStreamEnd> Traits;
-    iBase->doWork<Traits>(*m_lbp,*m_es,m_context,m_timer, s_streamID0, parentContext, nullptr); };
-  m_transToFunc[Trans::kGlobalEndLuminosityBlock] = [this,&parentContext](edm::Worker* iBase) {
+    edm::ParentContext parentContext;
+    iBase->doWork<Traits>(*m_lbp,*m_es,m_timer, s_streamID0, parentContext, nullptr); };
+  m_transToFunc[Trans::kGlobalEndLuminosityBlock] = [this](edm::Worker* iBase) {
     typedef edm::OccurrenceTraits<edm::LuminosityBlockPrincipal, edm::BranchActionGlobalEnd> Traits;
-    iBase->doWork<Traits>(*m_lbp,*m_es,m_context,m_timer, s_streamID0, parentContext, nullptr); };
+    edm::ParentContext parentContext;
+    iBase->doWork<Traits>(*m_lbp,*m_es,m_timer, s_streamID0, parentContext, nullptr); };
 
-  m_transToFunc[Trans::kStreamEndRun] = [this,&parentContext](edm::Worker* iBase) {
+  m_transToFunc[Trans::kStreamEndRun] = [this](edm::Worker* iBase) {
     typedef edm::OccurrenceTraits<edm::RunPrincipal, edm::BranchActionStreamEnd> Traits;
-    iBase->doWork<Traits>(*m_rp,*m_es,m_context,m_timer, s_streamID0, parentContext, nullptr); };
-  m_transToFunc[Trans::kGlobalEndRun] = [this,&parentContext](edm::Worker* iBase) {
+    edm::ParentContext parentContext;
+    iBase->doWork<Traits>(*m_rp,*m_es,m_timer, s_streamID0, parentContext, nullptr); };
+  m_transToFunc[Trans::kGlobalEndRun] = [this](edm::Worker* iBase) {
     typedef edm::OccurrenceTraits<edm::RunPrincipal, edm::BranchActionGlobalEnd> Traits;
-    iBase->doWork<Traits>(*m_rp,*m_es,m_context,m_timer, s_streamID0, parentContext, nullptr); };
+    edm::ParentContext parentContext;
+    iBase->doWork<Traits>(*m_rp,*m_es,m_timer, s_streamID0, parentContext, nullptr); };
 
-  m_transToFunc[Trans::kEndStream] = [this, &streamContext](edm::Worker* iBase) {
+  m_transToFunc[Trans::kEndStream] = [this](edm::Worker* iBase) {
+    edm::StreamContext streamContext(s_streamID0, nullptr);
     iBase->endStream(s_streamID0, streamContext); };
 
 }
@@ -441,7 +452,11 @@ namespace {
   template<typename T>
   std::unique_ptr<edm::stream::EDProducerAdaptorBase> createModule() {
     edm::ParameterSet pset;
-    return std::unique_ptr<edm::stream::EDProducerAdaptorBase>(new edm::stream::EDProducerAdaptor<T>(pset));
+    std::unique_ptr<edm::stream::EDProducerAdaptorBase> retValue(new edm::stream::EDProducerAdaptor<T>(pset));
+    edm::maker::ModuleHolderT<edm::stream::EDProducerAdaptorBase> h(retValue.get(),nullptr);
+    h.preallocate(edm::PreallocationConfiguration{});
+    h.release();
+    return retValue;
   }
   template<typename T>
   void
@@ -460,8 +475,8 @@ namespace {
 
 template<typename T, typename U>
 void
-testStreamModule::testTransitions(std::unique_ptr<U>&& iMod, Expectations const& iExpect) {
-  edm::WorkerT<edm::stream::EDProducerAdaptorBase> w{std::move(iMod),m_desc,m_params};
+testStreamModule::testTransitions(U* iMod, Expectations const& iExpect) {
+  edm::WorkerT<edm::stream::EDProducerAdaptorBase> w{iMod,m_desc,nullptr};
   for(auto& keyVal: m_transToFunc) {
     testTransition<T>(&w,keyVal.first,iExpect,keyVal.second);
   }
@@ -471,7 +486,7 @@ void
 testStreamModule::runTest(Expectations const& iExpect) {
   auto mod = createModule<T>();
   CPPUNIT_ASSERT(0 == T::m_count);
-  testTransitions<T>(std::move(mod),iExpect);
+  testTransitions<T>(mod.get(),iExpect);
 }
 
 

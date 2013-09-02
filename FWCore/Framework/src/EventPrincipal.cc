@@ -6,7 +6,7 @@
 #include "DataFormats/Provenance/interface/BranchListIndex.h"
 #include "DataFormats/Provenance/interface/ProductIDToBranchID.h"
 #include "DataFormats/Provenance/interface/ProductRegistry.h"
-#include "DataFormats/Provenance/interface/Provenance.h"
+#include "FWCore/Common/interface/Provenance.h"
 #include "FWCore/Framework/interface/DelayedReader.h"
 #include "FWCore/Framework/interface/ProductHolder.h"
 #include "FWCore/Framework/interface/LuminosityBlockPrincipal.h"
@@ -23,7 +23,7 @@ namespace edm {
         boost::shared_ptr<BranchIDListHelper const> branchIDListHelper,
         ProcessConfiguration const& pc,
         HistoryAppender* historyAppender,
-        StreamID const& streamID) :
+        unsigned int streamIndex) :
     Base(reg, reg->productLookup(InEvent), pc, InEvent, historyAppender),
           aux_(),
           luminosityBlockPrincipal_(),
@@ -34,7 +34,7 @@ namespace edm {
           branchIDListHelper_(branchIDListHelper),
           branchListIndexes_(new BranchListIndexes),
           branchListIndexToProcessIndex_(),
-          streamID_(streamID){}
+          streamID_(streamIndex){}
 
   void
   EventPrincipal::clearEventPrincipal() {
@@ -51,11 +51,12 @@ namespace edm {
 
   void
   EventPrincipal::fillEventPrincipal(EventAuxiliary const& aux,
+        ProcessHistoryRegistry& processHistoryRegistry,
         boost::shared_ptr<EventSelectionIDVector> eventSelectionIDs,
         boost::shared_ptr<BranchListIndexes> branchListIndexes,
         boost::shared_ptr<BranchMapper> mapper,
         DelayedReader* reader) {
-    fillPrincipal(aux.processHistoryID(), reader);
+    fillPrincipal(aux.processHistoryID(), processHistoryRegistry, reader);
     aux_ = aux;
     if(eventSelectionIDs) {
       eventSelectionIDs_ = eventSelectionIDs;
@@ -83,7 +84,7 @@ namespace edm {
     // Fill in the product ID's in the product holders.
     for(auto const& prod : *this) {
       if (prod->singleProduct()) {
-        prod->setProvenance(branchMapperPtr(), processHistoryID(), branchIDToProductID(prod->branchDescription().branchID()));
+        prod->setProvenance(branchMapperPtr(), processHistory(), branchIDToProductID(prod->branchDescription().branchID()));
       }
     }
   }
@@ -108,7 +109,7 @@ namespace edm {
 
   void
   EventPrincipal::put(
-        ConstBranchDescription const& bd,
+        BranchDescription const& bd,
         WrapperOwningHolder const& edp,
         ProductProvenance const& productProvenance) {
 
@@ -129,7 +130,7 @@ namespace edm {
 
   void
   EventPrincipal::putOnRead(
-        ConstBranchDescription const& bd,
+        BranchDescription const& bd,
         void const* product,
         ProductProvenance const& productProvenance) {
 
@@ -293,7 +294,7 @@ namespace edm {
         << "https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideUnscheduledExecution#Circular_Dependence_Errors.";
     }
 
-    moduleLabelsRunning_.push_back(moduleLabel);
+    UnscheduledSentry sentry(&moduleLabelsRunning_, moduleLabel);
 
     if(unscheduledHandler_) {
       if(mcc == nullptr) {
@@ -304,7 +305,6 @@ namespace edm {
       }
       unscheduledHandler_->tryToFill(moduleLabel, *const_cast<EventPrincipal*>(this), mcc);
     }
-    moduleLabelsRunning_.pop_back();
     return true;
   }
 }
