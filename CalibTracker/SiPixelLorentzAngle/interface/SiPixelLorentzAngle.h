@@ -195,8 +195,7 @@ class SiPixelLorentzAngle : public edm::EDAnalyzer
   const TrackerGeometry * tracker;
   const MagneticField * magfield;
   TrajectoryStateTransform tsTransform;
-  edm::EDGetTokenT<TrajTrackAssociationCollection>   m_trajTrackAssociationTag;
-  //edm::EDGetTokenT<TrajTrackAssociationCollection> t_trajTrack;
+  edm::EDGetTokenT<TrajTrackAssociationCollection> t_trajTrack;
   
 };
 
