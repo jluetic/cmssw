@@ -110,7 +110,6 @@ void SiPixelLorentzAngle::beginJob()
   SiPixelLorentzAngleTreeForward_->Branch("clust", &clustF_, "x/F:y/F:charge/F:size_x/I:size_y/I:maxPixelCol/I:maxPixelRow:minPixelCol/I:minPixelRow/I", bufsize);
   SiPixelLorentzAngleTreeForward_->Branch("rechit", &rechitF_, "x/F:y/F", bufsize);
 	
-	
   //book histograms
   char name[128];
   for(int i_module = 1; i_module<=8; i_module++){
