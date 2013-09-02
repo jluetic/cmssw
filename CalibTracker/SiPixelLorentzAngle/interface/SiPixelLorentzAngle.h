@@ -181,7 +181,6 @@ class SiPixelLorentzAngle : public edm::EDAnalyzer
   TH2F *h_cluster_shape_rot_;
   TH1F *h_tracks_;
   
-  
   int event_counter_, trackEventsCounter_,pixelTracksCounter_, hitCounter_, usedHitCounter_;
   
   // CMSSW classes needed
