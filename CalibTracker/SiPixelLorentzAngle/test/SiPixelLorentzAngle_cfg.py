@@ -3,9 +3,9 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("LA")
 
 process.load("Configuration.StandardSequences.Services_cff")
-
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
 #process.load("Configuration.StandardSequences.Geometry_cff")
-process.load('Configuration/StandardSequences/GeometryExtended_cff')
+process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 
 #process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
@@ -14,7 +14,7 @@ process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cf
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 # check for the correct tag on https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideFrontierConditions
-process.GlobalTag.globaltag = "GR09_PV7::All"
+process.GlobalTag.globaltag = "PRE_62_V8::All"
 
 
 process.load("RecoTracker.Configuration.RecoTracker_cff")
@@ -32,17 +32,18 @@ process.TrackRefitter.TrajectoryInEvent = True
 process.load("RecoTracker.TransientTrackingRecHit.TransientTrackingRecHitBuilderWithoutRefit_cfi")
 
 
+process.MessageLogger.categories.extend(["GetManyWithoutRegistration","GetByLabelWithoutRegistration"])
+_messageSettings = cms.untracked.PSet(
+                reportEvery = cms.untracked.int32(1),
+                            optionalPSet = cms.untracked.bool(True),
+                            limit = cms.untracked.int32(10000000)
+                        )
 
-process.MessageLogger = cms.Service("MessageLogger",
-    destinations = cms.untracked.vstring('simul', 
-        'cout'),
-    simul = cms.untracked.PSet(
-        threshold = cms.untracked.string('ERROR')
-    ),
-)
+process.MessageLogger.cerr.GetManyWithoutRegistration = _messageSettings
+process.MessageLogger.cerr.GetByLabelWithoutRegistration = _messageSettings
 
 process.lorentzAngle = cms.EDAnalyzer("SiPixelLorentzAngle",
-	src = cms.string("TrackRefitter"),
+	src = cms.InputTag("TrackRefitter"),
 	fileName = cms.string("lorentzangle.root"),
 	fileNameFit	= cms.string("lorentzFit.txt"),
 	binsDepth	= cms.int32(50),
@@ -65,14 +66,14 @@ process.p = cms.Path(process.offlineBeamSpot*process.TrackRefitter*process.loren
 # uncomment this if you want to write out the new CMSSW root file (very large)
 # process.outpath = cms.EndPath(process.myout)
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(5)
 )
 
 process.source = cms.Source("PoolSource",
 	#put here the sample you want to use
     fileNames = cms.untracked.vstring(
     #put your source file here
-	  # ' '
+	   '/store/data/Run2012D/MuOnia/RECO/PromptReco-v1/000/208/307/F282D666-F03C-E211-B25A-BCAEC5329703.root '
 	),   
 #   skipEvents = cms.untracked.uint32(100) 
 )
