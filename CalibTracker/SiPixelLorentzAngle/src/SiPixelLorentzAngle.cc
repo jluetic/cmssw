@@ -4,7 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include <TMath.h>
-#include "CalibTracker/SiPixelLorentzAngle/interface/SiPixelLorentzAngle.h"
 
 #include "DataFormats/TrajectorySeed/interface/TrajectorySeedCollection.h"
 #include "FWCore/Framework/interface/ESHandle.h"
@@ -27,6 +26,7 @@
 #include "TrackingTools/TrackFitters/interface/TrajectoryStateCombiner.h"
 #include "TrackingTools/PatternTools/interface/TrajTrackAssociation.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "CalibTracker/SiPixelLorentzAngle/interface/SiPixelLorentzAngle.h"
 int lower_bin_;
 
 using namespace std;
@@ -49,7 +49,8 @@ SiPixelLorentzAngle::SiPixelLorentzAngle(edm::ParameterSet const& conf) :
   min_drift_ = -1000.; //-200.;(conf.getParameter<double>("residualMax"))
   max_drift_ = 1000.; //400.;
 
-consumes<TrajTrackAssociationCollection> (conf.getParameter<edm::InputTag>("src"));
+ m_trajTrackAssociationTag   = consumes<TrajTrackAssociationCollection>(conf.getParameter<edm::InputTag>("src"));
+// t_trajTrack = consumes<TrajTrackAssociationCollection> (conf.getParameter<edm::InputTag>("src"));
 
 }
 
@@ -181,7 +182,7 @@ void SiPixelLorentzAngle::analyze(const edm::Event& e, const edm::EventSetup& es
 	
   // get the association map between tracks and trajectories
   edm::Handle<TrajTrackAssociationCollection> trajTrackCollectionHandle;
-  e.getByLabel(conf_.getParameter<edm::InputTag>("src"),trajTrackCollectionHandle);
+  e.getByToken(m_trajTrackAssociationTag,trajTrackCollectionHandle);
   if(trajTrackCollectionHandle->size() >0){
     trackEventsCounter_++;
     for(TrajTrackAssociationCollection::const_iterator it = trajTrackCollectionHandle->begin(); it!=trajTrackCollectionHandle->end();++it){
