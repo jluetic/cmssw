@@ -49,6 +49,8 @@ SiPixelLorentzAngle::SiPixelLorentzAngle(edm::ParameterSet const& conf) :
   min_drift_ = -1000.; //-200.;(conf.getParameter<double>("residualMax"))
   max_drift_ = 1000.; //400.;
 
+consumes<TrajTrackAssociationCollection> (conf.getParameter<edm::InputTag>("src"));
+
 }
 
 // Virtual destructor needed.
@@ -179,7 +181,7 @@ void SiPixelLorentzAngle::analyze(const edm::Event& e, const edm::EventSetup& es
 	
   // get the association map between tracks and trajectories
   edm::Handle<TrajTrackAssociationCollection> trajTrackCollectionHandle;
-  e.getByLabel(conf_.getParameter<std::string>("src"),trajTrackCollectionHandle);
+  e.getByLabel(conf_.getParameter<edm::InputTag>("src"),trajTrackCollectionHandle);
   if(trajTrackCollectionHandle->size() >0){
     trackEventsCounter_++;
     for(TrajTrackAssociationCollection::const_iterator it = trajTrackCollectionHandle->begin(); it!=trajTrackCollectionHandle->end();++it){
