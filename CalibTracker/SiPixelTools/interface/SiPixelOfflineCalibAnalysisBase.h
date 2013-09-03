@@ -55,6 +55,14 @@
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "CondFormats/SiPixelObjects/interface/SiPixelFedCablingMap.h"
 
+#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
+#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetType.h"
+#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h" 
+
+#include "CondFormats/SiPixelObjects/interface/SiPixelFrameConverter.h"
+#include "CondFormats/SiPixelObjects/interface/ElectronicIndex.h"
+#include "CondFormats/SiPixelObjects/interface/DetectorIndex.h"
+#include "CondFormats/SiPixelObjects/interface/LocalPixel.h"
 #include <map>
 #include <vector>
 #include <iostream>
@@ -150,5 +158,9 @@ private:
  
   // checkPixel returns whether a particular pixel is to be expected during the entire run..
   bool checkPixel(uint32_t detid, short row, short column);
+
+  // registring for data access
+  edm::EDGetTokenT<edm::DetSetVector<SiPixelCalibDigi>> tPixelCalibDigi;
+
 };
 
