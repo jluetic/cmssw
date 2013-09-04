@@ -65,6 +65,7 @@ class SiPixelDQMRocLevelAnalyzer : public edm::EDAnalyzer {
       edm::ParameterSet conf_;
       DQMStore * dbe;
       edm::Service<TFileService> fs_;
+      //edm::EDGetTokenT<ExampleData> tExampleData;
 
       std::vector<MonitorElement*> mes;
       bool bRS, fRS, bPixelAlive;

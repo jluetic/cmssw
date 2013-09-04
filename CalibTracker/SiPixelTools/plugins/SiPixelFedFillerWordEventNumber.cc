@@ -32,6 +32,7 @@ SiPixelFedFillerWordEventNumber ::SiPixelFedFillerWordEventNumber (const edm::Pa
   if (SaveFillerWordsbool == true){
     produces<std::vector<uint32_t> > ("SaveFillerWord");
   }
+  consumes<FEDRawDataCollection>(iConfig.getUntrackedParameter<std::string>("InputLabel","source"));
 }
 
 SiPixelFedFillerWordEventNumber ::~SiPixelFedFillerWordEventNumber ()

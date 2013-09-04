@@ -3,7 +3,7 @@
 SiPixelDQMRocLevelAnalyzer::SiPixelDQMRocLevelAnalyzer(const edm::ParameterSet& iConfig):conf_(iConfig)
 {
 
-
+   // consumes<ExampleData> (edm::InputTag("example"));
 }
 
 
@@ -18,7 +18,7 @@ void
 SiPixelDQMRocLevelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
-
+/*
 
 #ifdef THIS_IS_AN_EVENT_EXAMPLE
    Handle<ExampleData> pIn;
@@ -29,7 +29,7 @@ SiPixelDQMRocLevelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSe
    ESHandle<SetupData> pSetup;
    iSetup.get<SetupRecord>().get(pSetup);
 #endif
-}
+*/}
 
 
 // ------------ method called once each job just before starting event loop  ------------
