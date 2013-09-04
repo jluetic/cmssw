@@ -19,6 +19,7 @@
 #include "DataFormats/GeometryVector/interface/GlobalPoint.h"
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHit.h"
 #include "DataFormats/TrajectorySeed/interface/TrajectorySeed.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
 
 #include "TrackingTools/MaterialEffects/interface/PropagatorWithMaterial.h"
 #include "TrackingTools/KalmanUpdators/interface/KFUpdator.h"
@@ -77,6 +78,12 @@ class SiPixelErrorEstimation : public edm::EDAnalyzer
   edm::ParameterSet conf_;
   std::string outputFile_;
   std::string src_;
+  
+  edm::EDGetTokenT <std::vector<Trajectory>> tTrajectory;
+  edm::EDGetTokenT <SiPixelRecHitCollection> tSiPixelRecHitCollection;
+  edm::EDGetTokenT <edm::SimTrackContainer> tSimTrackContainer;
+  edm::EDGetTokenT <reco::TrackCollection> tTrackCollection;
+
   bool checkType_; // do we check that the simHit associated with recHit is of the expected particle type ?
   int genType_; // the type of particle that the simHit associated with recHits should be
   bool include_trk_hits_; // if set to false, take only hits directly from detector modules (don't ntuplize hits from tracks)
