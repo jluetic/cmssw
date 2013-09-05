@@ -86,6 +86,8 @@ class SiPixelCalibDigiProducer : public edm::EDProducer {
       edm::ESHandle<TrackerGeometry> theGeometry_; // the tracker geometry
       edm::ESHandle<SiPixelFedCablingMap> theCablingMap_;
 
+      edm::EDGetTokenT<edm::DetSetVector<PixelDigi>> tPixelDigi;
+
       // worker variables
       std::map<pixelstruct,SiPixelCalibDigi> intermediate_data_; // data container, copied over into the event every pattern_repeat_ events
       std::map<pixelstruct,SiPixelCalibDigiError> error_data_;

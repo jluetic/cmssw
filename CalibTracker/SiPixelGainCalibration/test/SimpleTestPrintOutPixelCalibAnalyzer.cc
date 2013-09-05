@@ -47,6 +47,8 @@ SimpleTestPrintOutPixelCalibAnalyzer::SimpleTestPrintOutPixelCalibAnalyzer(const
 {
    //now do what ever initialization is needed
 
+  tSiPixelCalibDigi = consumes <edm::DetSetVector<SiPixelCalibDigi>>(edm::InputTag("siPixelCalibDigis")); 
+
 }
 
 
@@ -68,7 +70,7 @@ SimpleTestPrintOutPixelCalibAnalyzer::printInfo(const edm::Event& iEvent, const 
   using namespace edm;
   
   Handle<DetSetVector<SiPixelCalibDigi> > pIn;
-  iEvent.getByLabel("siPixelCalibDigis",pIn);
+  iEvent.getByToken(tSiPixelCalibDigi,pIn);
 
   DetSetVector<SiPixelCalibDigi>::const_iterator digiIter;
   for(digiIter=pIn->begin(); digiIter!=pIn->end(); ++digiIter){
